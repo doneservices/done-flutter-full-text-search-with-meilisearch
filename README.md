@@ -69,7 +69,7 @@ Future<SearchResultModel> addUserToSearch() async {
 
 Search query from flutter
 
-```
+```dart
 import 'package:meilisearch/meilisearch.dart';
 import 'package:search_demo/model/search_result_model.dart';
 
