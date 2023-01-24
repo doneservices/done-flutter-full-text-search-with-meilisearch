@@ -53,13 +53,13 @@ class _SearchDemoPageState extends State<SearchDemoPage> {
           children: <Widget>[
             SearchBar(
                 queryController: queryController,
-                textChangeCallBack: () {
+                onChanged: () {
                   setState(() {});
                 }),
             const Padding(
               padding: EdgeInsets.all(16.0),
               child: Text(
-                'Your search results will be appeared here...',
+                'Your search results will appear here...',
               ),
             ),
             SearchResults(query: queryController.text),
@@ -75,11 +75,11 @@ class SearchBar extends StatefulWidget {
   const SearchBar({
     super.key,
     required this.queryController,
-    required this.textChangeCallBack,
+    required this.onChanged,
   });
 
   final TextEditingController queryController;
-  final Function textChangeCallBack;
+  final VoidCallback onChanged;
 
   @override
   State<SearchBar> createState() => _SearchBarState();
@@ -91,7 +91,7 @@ class _SearchBarState extends State<SearchBar> {
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: TextField(
-        onChanged: ((_) => widget.textChangeCallBack()),
+        onChanged: (_) => widget.onChanged(),
         controller: widget.queryController,
         decoration: const InputDecoration(
           prefixIcon: Icon(Icons.search),
@@ -112,14 +112,18 @@ class SearchResults extends StatelessWidget {
     return Expanded(
       child: FutureBuilder(
         future: searchUsers(query),
-        builder: (context, searchResult) {
-          if (searchResult.data == null) return const SizedBox();
+        builder: (context, searchSnapshot) {
+          if (searchSnapshot.data == null || searchSnapshot.data?.isEmpty == true) {
+            return const Center(child: Text('No results'));
+          }
+
+          final searchResult = searchSnapshot.data!;
 
           return Scrollbar(
               child: ListView.separated(
-            itemCount: searchResult.data!.length,
+            itemCount: searchResult.length,
             itemBuilder: (context, index) {
-              final result = searchResult.data![index];
+              final result = searchResult[index];
 
               return ListTile(
                 title: Text("${result.firstName} ${result.lastName}"),
@@ -143,16 +147,16 @@ class AddRandomUserToSearchDatabaseFloatingButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return FloatingActionButton(
       onPressed: () async {
-        final savedSearchItem = await addUserToSearch();
+        addUserToSearch().then((savedSearchItem) {
+          final message =
+              "${savedSearchItem.firstName ?? ''} ${savedSearchItem.lastName} ${savedSearchItem.email}";
 
-        final message =
-            "${savedSearchItem.firstName ?? ''} ${savedSearchItem.lastName} ${savedSearchItem.email}";
+          final snackBar = SnackBar(
+            content: Text(message),
+          );
 
-        final snackBar = SnackBar(
-          content: Text(message),
-        );
-
-        ScaffoldMessenger.of(context).showSnackBar(snackBar);
+          ScaffoldMessenger.of(context).showSnackBar(snackBar);
+        });
       },
       tooltip: 'Add new item',
       child: const Icon(Icons.add),
