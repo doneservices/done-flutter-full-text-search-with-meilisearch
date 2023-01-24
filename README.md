@@ -1,4 +1,6 @@
-Flutter full text search with meilisearch
+<img width="339" alt="Screenshot 2023-01-23 at 00 52 26" src="https://user-images.githubusercontent.com/19980760/213947205-06cbe2a6-1acd-43bc-a6cd-de2b53ed49ae.png">
+
+
 Flutter Stockholm 24 January 2023 - Full Text Search Talk
 
 Meili setup
