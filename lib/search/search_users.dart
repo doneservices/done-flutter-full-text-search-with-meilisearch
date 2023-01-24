@@ -3,12 +3,19 @@ import 'package:search_demo/model/search_result_model.dart';
 
 Future<List<SearchResultModel>> searchUsers(String searchText) async {
   try {
+    /// Creating api key...
+    //  curl\
+    // -X POST 'http://localhost:7700/indexes/users/search' \
+    // -H 'Authorization: Bearer search-demo'
     const serverUrl = 'http://localhost:7700';
     const apiKey = 'search-demo';
 
     final client = MeiliSearchClient(serverUrl, apiKey);
 
     final searchResult = await client.index('users').search(searchText);
+
+    //For phrase search
+    //final searchResult = await client.index('users').search('"$searchText"');
 
     if (searchResult.hits == null || searchResult.hits!.isEmpty) return [];
 
